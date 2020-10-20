@@ -2,9 +2,9 @@
 
 const User_Number = [`01`, `02`, `03`, `04`, `05`, `06`, `07`, `08`];
 
-const Location_X;
+const locationX;
 
-const Location_Y;
+const locationY;
 
 const Type = [`palace`, `flat`, `house`, `bungalow`];
 
@@ -15,16 +15,10 @@ const Checkout = [`12:00`, `13:00`, `14:00`];
 const Features = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 
 const Photos = [
-  "http://o0.github.io/assets/images/tokyo/hotel1.jpg",
-  "http://o0.github.io/assets/images/tokyo/hotel2.jpg",
-  "http://o0.github.io/assets/images/tokyo/hotel3.jpg"
+  `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
 ];
-
-const getRandomData = (data) => {
-  const datum = data[Math.random()];
-
-  return datum;
-};
 
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
@@ -39,11 +33,11 @@ const createSimilarAdverts = (author, offer, location) => {
 
     similarAdverts[i] = {
       "author": {
-        "avatar": url("../img/avatars/userUser_Number[i].png")
+        "avatar": src = `../img/avatars/userUser_Number[i].png`
       },
       "offer": {
         "title": title,
-        "address": Location_X, Location_Y,
+        "address": locationX, locationY,
         "price": price,
         "type": Type,
         "rooms": rooms,
@@ -62,3 +56,29 @@ const createSimilarAdverts = (author, offer, location) => {
   }
   return similarAdverts;
 };
+
+const adsMap = document.querySelector(`.map`);
+adsMap.classList.remove(`map--faded`);
+
+const adPinTemplate = document.querySelector(`#pin`).content;
+
+const adPin = adPinTemplate.querySelector(`.map__pin`);
+
+const renderAdPin = (advert) => {
+  const adPinElement = adPin.cloneNode(true);
+
+  adPinElement.style.style = `left: location.x + смещение по X + `px`; top: location.y + смещение по Y + `px`;`;
+  adPinElement.querySelector(`img`).src = advert.author.avatar;
+  adPinElement.querySelector(`img`).alt = advert.offer.title;
+
+  return adPinElement;
+};
+
+const fragment = document.createDocumentFragment();
+for (let i = 0; i < createSimilarAdverts(author, offer, location).length; i++) {
+  fragment.appendChild(renderAdPin(createSimilarAdverts(author, offer, location)[i]));
+}
+
+const mapPins = document.querySelector(`.map__pins`);
+
+mapPins.appendChild(fragment);
