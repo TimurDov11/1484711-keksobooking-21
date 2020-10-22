@@ -22,7 +22,7 @@ const getRandomInt = (min, max) => {
   max = Math.floor(max);
 
   return Math.floor(Math.random() * (max - min)) + min;
-}
+};
 
 const TITLES = [
   `Title1`,
@@ -102,7 +102,7 @@ const adPinTemplate = document.querySelector(`#pin`).content.firstElementChild;
 const renderAdPin = (advert) => {
   const adPinElement = adPinTemplate.cloneNode(true);
 
-  adPinElement.style = `left: ${advert.location.x - PIN_WIDTH/2}px; top: ${advert.location.y - PIN_HEIGHT}px;`;
+  adPinElement.style = `left: ${advert.location.x - PIN_WIDTH / 2}px; top: ${advert.location.y - PIN_HEIGHT}px;`;
   adPinElement.querySelector(`img`).src = advert.author.avatar;
   adPinElement.querySelector(`img`).alt = advert.offer.title;
 
