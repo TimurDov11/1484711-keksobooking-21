@@ -3,7 +3,7 @@
 const PIN_WIDTH = 50;
 const PIN_HEIGHT = 70;
 
-const TYPE = [`palace`, `flat`, `house`, `bungalow`];
+const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 
 const CHECKIN = [`12:00`, `13:00`, `14:00`];
 
@@ -68,7 +68,7 @@ const createSimilar = (num) => {
       "title": TITLES[getRandomInt(0, TITLES.length)],
       "address": `${getRandomInt(0, 1000)}, ${getRandomInt(0, 1000)}`,
       "price": getRandomInt(PRICE_MIN, PRICE_MAX),
-      "type": TYPE[getRandomInt(0, TYPE.length)],
+      "type": TYPES[getRandomInt(0, TYPES.length)],
       "rooms": getRandomInt(1, 4),
       "guests": getRandomInt(2, 12),
       "checkin": CHECKIN[getRandomInt(0, CHECKIN.length)],
@@ -118,3 +118,36 @@ for (let i = 0; i < adverts.length; i++) {
 const mapPins = document.querySelector(`.map__pins`);
 
 mapPins.appendChild(fragment);
+
+const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
+
+const renderAdCard = (advert) => {
+  //  const TYPE_NAMES = [`Дворец`, `Квартира`, `Дом`, `Бунгало`];
+
+  const adCardElement = adCardTemplate.cloneNode(true);
+
+  adCardElement.querySelector(`.popup__title`).textContent = advert.offer.title;
+  adCardElement.querySelector(`.popup__text--address`).textContent = advert.offer.address;
+  adCardElement.querySelector(`.popup__text--price`).textContent = `${advert.offer.price}₽/ночь`;
+  adCardElement.querySelector(`.popup__type`).textContent = advert.offer.type;
+  adCardElement.querySelector(`.popup__text--capacity`).textContent = `${advert.offer.rooms} комнаты для ${advert.offer.guests} гостей`;
+  adCardElement.querySelector(`.popup__text--time`).textContent = `Заезд после ${advert.offer.checkin}, выезд до ${advert.offer.checkout}`;
+  adCardElement.querySelector(`.popup__features`).textContent = advert.offer.features;
+  adCardElement.querySelector(`.popup__description`).textContent = advert.offer.description;
+  for (let i = 0; i < advert.offer.photos.length; i++) {
+    if (i > 0) {
+      const newImg = adCardElement.querySelector(`.popup__photos`).children[0].cloneNode(true);
+      //  console.log(newImg);
+      adCardElement.querySelector(`.popup__photos`).appendChild(newImg);
+    }
+    adCardElement.querySelector(`.popup__photos`).children[i].src = advert.offer.photos[i];
+  }
+
+  adCardElement.querySelector(`.popup__avatar`).src = advert.author.avatar;
+
+  return adCardElement;
+};
+
+const adsFilter = adsMap.querySelector(`.map__filters-container`);
+
+adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);
