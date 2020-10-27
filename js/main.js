@@ -143,7 +143,7 @@ const renderAdCard = (advert) => {
     case `bungalow`:
       popupType.textContent = `Бунгало`;
       break;
-  };
+  }
 
   adCardElement.querySelector(`.popup__text--capacity`).textContent = `${advert.offer.rooms} комнаты для ${advert.offer.guests} гостей`;
   adCardElement.querySelector(`.popup__text--time`).textContent = `Заезд после ${advert.offer.checkin}, выезд до ${advert.offer.checkout}`;
@@ -155,7 +155,7 @@ const renderAdCard = (advert) => {
   adCardElement.querySelector(`.popup__photos`).removeChild(popupPhoto);
 
   for (let i = 0; i < advert.offer.photos.length; i++) {
-    const newImagePopupPhoto = popupPhoto.cloneNode(true);
+    const newImagePopupPhoto = newPopupPhoto.cloneNode(true);
     newImagePopupPhoto.src = advert.offer.photos[i];
     adCardElement.querySelector(`.popup__photos`).appendChild(newImagePopupPhoto);
   }
