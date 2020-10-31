@@ -147,7 +147,19 @@ const renderAdCard = (advert) => {
 
   adCardElement.querySelector(`.popup__text--capacity`).textContent = `${advert.offer.rooms} комнаты для ${advert.offer.guests} гостей`;
   adCardElement.querySelector(`.popup__text--time`).textContent = `Заезд после ${advert.offer.checkin}, выезд до ${advert.offer.checkout}`;
-  adCardElement.querySelector(`.popup__features`).textContent = advert.offer.features;
+
+
+  const featuresContainer = adCardElement.querySelector(`.popup__features`);
+  featuresContainer.textContent = ``;
+
+  advert.offer.features.forEach((value) => {
+    const newFeature = document.createElement(`li`);
+    newFeature.classList.add(`popup__feature`);
+    newFeature.classList.add(`popup__feature--${value}`);
+
+    featuresContainer.appendChild(newFeature);
+  });
+
   adCardElement.querySelector(`.popup__description`).textContent = advert.offer.description;
 
   const popupPhoto = adCardElement.querySelector(`.popup__photos`).children[0];
