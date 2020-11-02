@@ -1,5 +1,45 @@
 'use strict';
 
+const mapFiltersForm = document.querySelector(`.map__filters`);
+
+const mapFiltersFormFilters = Array.from(mapFiltersForm.children);
+
+const setAttributeDisabledForEach = (values) => {
+  values.forEach((value) => {
+    value.setAttribute(`disabled`, `disabled`);
+  });
+};
+
+/*const setAttributeDisabled = (name) => {
+  name.setAttribute(`disabled`, `disabled`);
+}*/
+
+/*mapFiltersFormFilters.forEach((mapFiltersFormFilter) => {
+  setAttributeDisabled(mapFiltersFormFilter);
+
+  //mapFiltersFormFilter.setAttribute(`disabled`, `disabled`);
+});*/
+
+const adForm = document.querySelector(`.ad-form`);
+
+const adFormFieldsets = adForm.querySelectorAll(`fieldset`);
+
+/*const setAttributeDisabled = (name) => {
+  name.setAttribute(`disabled`, `disabled`);
+}*/
+
+/*adFormFieldsets.forEach((adFormFieldset) => {
+  setAttributeDisabled(adFormFieldset);
+
+  //adFormFieldset.setAttribute(`disabled`, `disabled`);
+});*/
+
+setAttributeDisabledForEach(mapFiltersFormFilters);
+
+setAttributeDisabledForEach(adFormFieldsets);
+
+console.log(mapFiltersFormFilters);
+
 const PIN_WIDTH = 50;
 const PIN_HEIGHT = 70;
 
@@ -94,8 +134,8 @@ const createSimilarAdverts = () => {
   return similarAdverts;
 };
 
-const adsMap = document.querySelector(`.map`);
-adsMap.classList.remove(`map--faded`);
+//  const adsMap = document.querySelector(`.map`);
+//  adsMap.classList.remove(`map--faded`);
 
 const adPinTemplate = document.querySelector(`#pin`).content.firstElementChild;
 
@@ -119,7 +159,7 @@ const mapPins = document.querySelector(`.map__pins`);
 
 mapPins.appendChild(fragment);
 
-const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
+/*const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
 
 const renderAdCard = (advert) => {
   const adCardElement = adCardTemplate.cloneNode(true);
@@ -179,4 +219,5 @@ const renderAdCard = (advert) => {
 
 const adsFilter = adsMap.querySelector(`.map__filters-container`);
 
-adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);
+adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);*/
+
