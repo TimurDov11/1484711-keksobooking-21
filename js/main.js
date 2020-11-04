@@ -1,5 +1,11 @@
 'use strict';
 
+const PIN_MAIN_WIDTH = 65;
+
+const PIN_MAIN_HEIGHT = 65;
+
+const PIN_MAIN_POINT_HEIGHT = 22;
+
 const mapFiltersForm = document.querySelector(`.map__filters`);
 
 const mapFiltersFormFilters = Array.from(mapFiltersForm.children);
@@ -18,9 +24,15 @@ setAttributeDisabledForEach(mapFiltersFormFilters);
 
 setAttributeDisabledForEach(adFormFieldsets);
 
+const adFormAdressInput = adForm.querySelector(`#address`);
+
 const adsMap = document.querySelector(`.map`);
 
 const mapPins = document.querySelector(`.map__pins`);
+
+const mapPinMain = mapPins.querySelector(`.map__pin--main`);
+
+adFormAdressInput.value = `${Math.round(parseInt(mapPinMain.style.getPropertyValue(`left`), 10) + PIN_MAIN_WIDTH / 2)}, ${Math.round(parseInt(mapPinMain.style.getPropertyValue(`top`), 10) + PIN_MAIN_HEIGHT / 2)}`;
 
 const removeAttributeDisabledForEach = (values) => {
   values.forEach((value) => {
@@ -69,6 +81,8 @@ const activatePage = () => {
   removeAttributeDisabledForEach(mapFiltersFormFilters);
 
   removeAttributeDisabledForEach(adFormFieldsets);
+
+  adFormAdressInput.value = `${Math.round(parseInt(mapPinMain.style.getPropertyValue(`left`), 10) + PIN_MAIN_WIDTH / 2)}, ${Math.round(parseInt(mapPinMain.style.getPropertyValue(`top`), 10) + PIN_MAIN_HEIGHT + PIN_MAIN_POINT_HEIGHT)}`;
 
   const getRandomInt = (min, max) => {
     min = Math.ceil(min);
@@ -154,8 +168,6 @@ const activatePage = () => {
 
   mapPins.appendChild(fragment);
 };
-
-const mapPinMain = mapPins.querySelector(`.map__pin--main`);
 
 const mapPinMainMousedownHandler = (evt) => {
   if (evt.button === 0) {
