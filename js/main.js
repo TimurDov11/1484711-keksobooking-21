@@ -247,3 +247,37 @@ const adsFilter = adsMap.querySelector(`.map__filters-container`);
 
 adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);*/
 
+const housingRoomsFilter = mapFiltersForm.querySelector(`#housing-rooms`);
+
+const housingGuestsFilter = mapFiltersForm.querySelector(`#housing-guests`);
+
+housingRoomsFilter.onchange = () => {
+  if (housingRoomsFilter.value === `1`) {
+    housingGuestsFilter.options[0].setAttribute(`disabled`, `disabled`);
+    housingGuestsFilter.options[1].setAttribute(`disabled`, `disabled`);
+    housingGuestsFilter.options[3].setAttribute(`disabled`, `disabled`);
+    housingGuestsFilter.setCustomValidity(`для 1 гостя`);
+  } else if (housingRoomsFilter.value === `2` || housingRoomsFilter.value === `3`) {
+    housingGuestsFilter.options[0].setAttribute(`disabled`, `disabled`);
+    housingGuestsFilter.options[1].removeAttribute(`disabled`);
+    housingGuestsFilter.options[3].setAttribute(`disabled`, `disabled`);
+  } else {
+    housingGuestsFilter.options[0].removeAttribute(`disabled`, `disabled`);
+    housingGuestsFilter.options[1].removeAttribute(`disabled`, `disabled`);
+    housingGuestsFilter.options[3].removeAttribute(`disabled`, `disabled`);
+  }
+};
+
+housingGuestsFilter.onchange = () => {
+  if (housingGuestsFilter.value === `2`) {
+    housingRoomsFilter.options[1].setAttribute(`disabled`, `disabled`);
+  } else if (housingGuestsFilter.value === `0`) {
+    housingRoomsFilter.options[1].setAttribute(`disabled`, `disabled`);
+    housingRoomsFilter.options[2].setAttribute(`disabled`, `disabled`);
+    housingRoomsFilter.options[3].setAttribute(`disabled`, `disabled`);
+  } else {
+    housingRoomsFilter.options[1].removeAttribute(`disabled`);
+    housingRoomsFilter.options[2].removeAttribute(`disabled`);
+    housingRoomsFilter.options[3].removeAttribute(`disabled`);
+  }
+};
