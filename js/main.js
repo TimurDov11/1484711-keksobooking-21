@@ -6,6 +6,39 @@ const PIN_MAIN_HEIGHT = 65;
 
 const PIN_MAIN_POINT_HEIGHT = 22;
 
+const PIN_WIDTH = 50;
+
+const PIN_HEIGHT = 70;
+
+const TYPES = [`palace`, `flat`, `house`, `bungalow`];
+
+const CHECKIN = [`12:00`, `13:00`, `14:00`];
+
+const CHECKOUT = [`12:00`, `13:00`, `14:00`];
+
+const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
+
+const PHOTOS = [
+  `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
+  `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
+];
+
+const TITLES = [
+  `Title1`,
+  `Title2`,
+  `Title3`
+];
+
+const DESCRIPTIONS = [
+  `Description1`,
+  `Description2`,
+  `Description3`
+];
+
+const PRICE_MIN = 500;
+const PRICE_MAX = 200000;
+
 const mapFiltersForm = document.querySelector(`.map__filters`);
 
 const mapFiltersFormFilters = Array.from(mapFiltersForm.children);
@@ -14,15 +47,15 @@ const adForm = document.querySelector(`.ad-form`);
 
 const adFormFieldsets = adForm.querySelectorAll(`fieldset`);
 
-const setAttributeDisabledForEach = (values) => {
+const setAttributeDisabled = (values) => {
   values.forEach((value) => {
     value.setAttribute(`disabled`, `disabled`);
   });
 };
 
-setAttributeDisabledForEach(mapFiltersFormFilters);
+setAttributeDisabled(mapFiltersFormFilters);
 
-setAttributeDisabledForEach(adFormFieldsets);
+setAttributeDisabled(adFormFieldsets);
 
 const adFormAdressInput = adForm.querySelector(`#address`);
 
@@ -34,139 +67,109 @@ const mapPinMain = mapPins.querySelector(`.map__pin--main`);
 
 adFormAdressInput.value = `${Math.round(parseInt(mapPinMain.style.getPropertyValue(`left`), 10) + PIN_MAIN_WIDTH / 2)}, ${Math.round(parseInt(mapPinMain.style.getPropertyValue(`top`), 10) + PIN_MAIN_HEIGHT / 2)}`;
 
-const removeAttributeDisabledForEach = (values) => {
+const removeAttributeDisabled = (values) => {
   values.forEach((value) => {
     value.removeAttribute(`disabled`);
   });
 };
 
+const getRandomInt = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
+const createSimilar = (num) => {
+  const features = [];
+  let temp = FEATURES.slice();
+  let size = getRandomInt(0, FEATURES.length);
+
+  for (let i = 0; i < size; i++) {
+    const index = getRandomInt(0, temp.length);
+    features.push(temp[index]);
+    temp.splice(index, 1);
+  }
+
+  const photos = [];
+  temp = PHOTOS.slice();
+  size = getRandomInt(0, PHOTOS.length);
+
+  for (let i = 0; i <= size; i++) {
+    const index = getRandomInt(0, temp.length);
+    photos.push(temp[index]);
+    temp.splice(index, 1);
+  }
+
+  const similarAdvert = {
+    "author": {
+      "avatar": `./img/avatars/user0${num}.png`
+    },
+    "offer": {
+      "title": TITLES[getRandomInt(0, TITLES.length)],
+      "address": `${getRandomInt(0, 1000)}, ${getRandomInt(0, 1000)}`,
+      "price": getRandomInt(PRICE_MIN, PRICE_MAX),
+      "type": TYPES[getRandomInt(0, TYPES.length)],
+      "rooms": getRandomInt(1, 4),
+      "guests": getRandomInt(2, 12),
+      "checkin": CHECKIN[getRandomInt(0, CHECKIN.length)],
+      "checkout": CHECKOUT[getRandomInt(0, CHECKOUT.length)],
+      "features": features,
+      "description": DESCRIPTIONS[getRandomInt(0, DESCRIPTIONS.length)],
+      "photos": photos
+    },
+    "location": {
+      "x": getRandomInt(0, 1200),
+      "y": getRandomInt(130, 630)
+    }
+  };
+  return similarAdvert;
+};
+
+const createSimilarAdverts = () => {
+  let similarAdverts = [];
+
+  for (let i = 1; i < 9; i++) {
+    similarAdverts.push(createSimilar(i));
+  }
+  return similarAdverts;
+};
+
+const adPinTemplate = document.querySelector(`#pin`).content.firstElementChild;
+
+const renderAdPin = (advert) => {
+  const adPinElement = adPinTemplate.cloneNode(true);
+
+  adPinElement.style = `left: ${advert.location.x - PIN_WIDTH / 2}px; top: ${advert.location.y - PIN_HEIGHT}px;`;
+  adPinElement.querySelector(`img`).src = advert.author.avatar;
+  adPinElement.querySelector(`img`).alt = advert.offer.title;
+
+  return adPinElement;
+};
+
+const fragment = document.createDocumentFragment();
+
+const adverts = createSimilarAdverts();
+
 const activatePage = () => {
-  const PIN_WIDTH = 50;
-
-  const PIN_HEIGHT = 70;
-
-  const TYPES = [`palace`, `flat`, `house`, `bungalow`];
-
-  const CHECKIN = [`12:00`, `13:00`, `14:00`];
-
-  const CHECKOUT = [`12:00`, `13:00`, `14:00`];
-
-  const FEATURES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
-
-  const PHOTOS = [
-    `http://o0.github.io/assets/images/tokyo/hotel1.jpg`,
-    `http://o0.github.io/assets/images/tokyo/hotel2.jpg`,
-    `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
-  ];
-
-  const TITLES = [
-    `Title1`,
-    `Title2`,
-    `Title3`
-  ];
-
-  const DESCRIPTIONS = [
-    `Description1`,
-    `Description2`,
-    `Description3`
-  ];
-
-  const PRICE_MIN = 500;
-  const PRICE_MAX = 200000;
-
   adsMap.classList.remove(`map--faded`);
 
   adForm.classList.remove(`ad-form--disabled`);
 
-  removeAttributeDisabledForEach(mapFiltersFormFilters);
+  removeAttributeDisabled(mapFiltersFormFilters);
 
-  removeAttributeDisabledForEach(adFormFieldsets);
+  removeAttributeDisabled(adFormFieldsets);
 
   adFormAdressInput.value = `${Math.round(parseInt(mapPinMain.style.getPropertyValue(`left`), 10) + PIN_MAIN_WIDTH / 2)}, ${Math.round(parseInt(mapPinMain.style.getPropertyValue(`top`), 10) + PIN_MAIN_HEIGHT + PIN_MAIN_POINT_HEIGHT)}`;
-
-  const getRandomInt = (min, max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-
-    return Math.floor(Math.random() * (max - min)) + min;
-  };
-
-  const createSimilar = (num) => {
-    const features = [];
-    let temp = FEATURES.slice();
-    let size = getRandomInt(0, FEATURES.length);
-
-    for (let i = 0; i < size; i++) {
-      const index = getRandomInt(0, temp.length);
-      features.push(temp[index]);
-      temp.splice(index, 1);
-    }
-
-    const photos = [];
-    temp = PHOTOS.slice();
-    size = getRandomInt(0, PHOTOS.length);
-
-    for (let i = 0; i <= size; i++) {
-      const index = getRandomInt(0, temp.length);
-      photos.push(temp[index]);
-      temp.splice(index, 1);
-    }
-
-    const similarAdvert = {
-      "author": {
-        "avatar": `./img/avatars/user0${num}.png`
-      },
-      "offer": {
-        "title": TITLES[getRandomInt(0, TITLES.length)],
-        "address": `${getRandomInt(0, 1000)}, ${getRandomInt(0, 1000)}`,
-        "price": getRandomInt(PRICE_MIN, PRICE_MAX),
-        "type": TYPES[getRandomInt(0, TYPES.length)],
-        "rooms": getRandomInt(1, 4),
-        "guests": getRandomInt(2, 12),
-        "checkin": CHECKIN[getRandomInt(0, CHECKIN.length)],
-        "checkout": CHECKOUT[getRandomInt(0, CHECKOUT.length)],
-        "features": features,
-        "description": DESCRIPTIONS[getRandomInt(0, DESCRIPTIONS.length)],
-        "photos": photos
-      },
-      "location": {
-        "x": getRandomInt(0, 1200),
-        "y": getRandomInt(130, 630)
-      }
-    };
-    return similarAdvert;
-  };
-
-  const createSimilarAdverts = () => {
-    let similarAdverts = [];
-
-    for (let i = 1; i < 9; i++) {
-      similarAdverts.push(createSimilar(i));
-    }
-    return similarAdverts;
-  };
-
-  const adPinTemplate = document.querySelector(`#pin`).content.firstElementChild;
-
-  const renderAdPin = (advert) => {
-    const adPinElement = adPinTemplate.cloneNode(true);
-
-    adPinElement.style = `left: ${advert.location.x - PIN_WIDTH / 2}px; top: ${advert.location.y - PIN_HEIGHT}px;`;
-    adPinElement.querySelector(`img`).src = advert.author.avatar;
-    adPinElement.querySelector(`img`).alt = advert.offer.title;
-
-    return adPinElement;
-  };
-
-  const fragment = document.createDocumentFragment();
-
-  const adverts = createSimilarAdverts();
 
   for (let i = 0; i < adverts.length; i++) {
     fragment.appendChild(renderAdPin(adverts[i]));
   }
 
   mapPins.appendChild(fragment);
+
+  mapPinMain.removeEventListener(`mousedown`, mapPinMainMousedownHandler);
+  mapPinMain.removeEventListener(`keydown`, mapPinMainKeydownEnterHandler);
 };
 
 const mapPinMainMousedownHandler = (evt) => {
@@ -247,37 +250,44 @@ const adsFilter = adsMap.querySelector(`.map__filters-container`);
 
 adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);*/
 
-const housingRoomsFilter = mapFiltersForm.querySelector(`#housing-rooms`);
+const roomNumberFilter = adForm.querySelector(`#room_number`);
 
-const housingGuestsFilter = mapFiltersForm.querySelector(`#housing-guests`);
+const capacityFilter = adForm.querySelector(`#capacity`);
 
-housingRoomsFilter.onchange = () => {
-  if (housingRoomsFilter.value === `1`) {
-    housingGuestsFilter.options[0].setAttribute(`disabled`, `disabled`);
-    housingGuestsFilter.options[1].setAttribute(`disabled`, `disabled`);
-    housingGuestsFilter.options[3].setAttribute(`disabled`, `disabled`);
-    housingGuestsFilter.setCustomValidity(`для 1 гостя`);
-  } else if (housingRoomsFilter.value === `2` || housingRoomsFilter.value === `3`) {
-    housingGuestsFilter.options[0].setAttribute(`disabled`, `disabled`);
-    housingGuestsFilter.options[1].removeAttribute(`disabled`);
-    housingGuestsFilter.options[3].setAttribute(`disabled`, `disabled`);
-  } else {
-    housingGuestsFilter.options[0].removeAttribute(`disabled`, `disabled`);
-    housingGuestsFilter.options[1].removeAttribute(`disabled`, `disabled`);
-    housingGuestsFilter.options[3].removeAttribute(`disabled`, `disabled`);
+if (roomNumberFilter.value < capacityFilter.value) {
+  roomNumberFilter.setCustomValidity(`Количество комнат должно быть больше или равно количеству гостей.`);
+}
+
+roomNumberFilter.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+  const value = parseInt(capacityFilter.value, 10);
+  target.setCustomValidity(``);
+  capacityFilter.setCustomValidity(``);
+
+  if (target.value < value && parseInt(target.value, 10) !== 100) {
+    target.setCustomValidity(`Количество комнат должно быть больше или равно количеству гостей.`);
+  } else if (parseInt(target.value, 10) === 100 && value !== 0) {
+    target.setCustomValidity(`Не для гостей.`);
+  } else if (parseInt(target.value, 10) !== 100 && value === 0) {
+    target.setCustomValidity(`Не для гостей необходимо выбрать 100 комнат.`);
   }
-};
 
-housingGuestsFilter.onchange = () => {
-  if (housingGuestsFilter.value === `2`) {
-    housingRoomsFilter.options[1].setAttribute(`disabled`, `disabled`);
-  } else if (housingGuestsFilter.value === `0`) {
-    housingRoomsFilter.options[1].setAttribute(`disabled`, `disabled`);
-    housingRoomsFilter.options[2].setAttribute(`disabled`, `disabled`);
-    housingRoomsFilter.options[3].setAttribute(`disabled`, `disabled`);
-  } else {
-    housingRoomsFilter.options[1].removeAttribute(`disabled`);
-    housingRoomsFilter.options[2].removeAttribute(`disabled`);
-    housingRoomsFilter.options[3].removeAttribute(`disabled`);
+  adForm.reportValidity();
+});
+
+capacityFilter.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+  const value = parseInt(roomNumberFilter.value, 10);
+  target.setCustomValidity(``);
+  roomNumberFilter.setCustomValidity(``);
+
+  if (target.value > value && parseInt(target.value, 10) !== 0 && value !== 100) {
+    target.setCustomValidity(`Количество мест должно быть меньше или равно количеству комнат.`);
+  } else if (parseInt(target.value, 10) !== 0 && value === 100) {
+    target.setCustomValidity(`Количество мест не для 100 комнат.`);
+  } else if (parseInt(target.value, 10) === 0 && value !== 100) {
+    target.setCustomValidity(`Не для выбранного количества комнат.`);
   }
-};
+
+  adForm.reportValidity();
+});
