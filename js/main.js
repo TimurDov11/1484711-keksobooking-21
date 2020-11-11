@@ -1,6 +1,13 @@
 'use strict';
 
+const PIN_MAIN_WIDTH = 65;
+
+const PIN_MAIN_HEIGHT = 65;
+
+const PIN_MAIN_POINT_HEIGHT = 22;
+
 const PIN_WIDTH = 50;
+
 const PIN_HEIGHT = 70;
 
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
@@ -17,13 +24,6 @@ const PHOTOS = [
   `http://o0.github.io/assets/images/tokyo/hotel3.jpg`
 ];
 
-const getRandomInt = (min, max) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-
-  return Math.floor(Math.random() * (max - min)) + min;
-};
-
 const TITLES = [
   `Title1`,
   `Title2`,
@@ -38,6 +38,47 @@ const DESCRIPTIONS = [
 
 const PRICE_MIN = 500;
 const PRICE_MAX = 200000;
+
+const mapFiltersForm = document.querySelector(`.map__filters`);
+
+const mapFiltersFormFilters = Array.from(mapFiltersForm.children);
+
+const adForm = document.querySelector(`.ad-form`);
+
+const adFormFieldsets = adForm.querySelectorAll(`fieldset`);
+
+const setAttributeDisabled = (values) => {
+  values.forEach((value) => {
+    value.setAttribute(`disabled`, `disabled`);
+  });
+};
+
+setAttributeDisabled(mapFiltersFormFilters);
+
+setAttributeDisabled(adFormFieldsets);
+
+const adFormAdressInput = adForm.querySelector(`#address`);
+
+const adsMap = document.querySelector(`.map`);
+
+const mapPins = document.querySelector(`.map__pins`);
+
+const mapPinMain = mapPins.querySelector(`.map__pin--main`);
+
+adFormAdressInput.value = `${Math.round(parseInt(mapPinMain.style.getPropertyValue(`left`), 10) + PIN_MAIN_WIDTH / 2)}, ${Math.round(parseInt(mapPinMain.style.getPropertyValue(`top`), 10) + PIN_MAIN_HEIGHT / 2)}`;
+
+const removeAttributeDisabled = (values) => {
+  values.forEach((value) => {
+    value.removeAttribute(`disabled`);
+  });
+};
+
+const getRandomInt = (min, max) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+
+  return Math.floor(Math.random() * (max - min)) + min;
+};
 
 const createSimilar = (num) => {
   const features = [];
@@ -94,9 +135,6 @@ const createSimilarAdverts = () => {
   return similarAdverts;
 };
 
-const adsMap = document.querySelector(`.map`);
-adsMap.classList.remove(`map--faded`);
-
 const adPinTemplate = document.querySelector(`#pin`).content.firstElementChild;
 
 const renderAdPin = (advert) => {
@@ -110,16 +148,47 @@ const renderAdPin = (advert) => {
 };
 
 const fragment = document.createDocumentFragment();
+
 const adverts = createSimilarAdverts();
-for (let i = 0; i < adverts.length; i++) {
-  fragment.appendChild(renderAdPin(adverts[i]));
-}
 
-const mapPins = document.querySelector(`.map__pins`);
+const activatePage = () => {
+  adsMap.classList.remove(`map--faded`);
 
-mapPins.appendChild(fragment);
+  adForm.classList.remove(`ad-form--disabled`);
 
-const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
+  removeAttributeDisabled(mapFiltersFormFilters);
+
+  removeAttributeDisabled(adFormFieldsets);
+
+  adFormAdressInput.value = `${Math.round(parseInt(mapPinMain.style.getPropertyValue(`left`), 10) + PIN_MAIN_WIDTH / 2)}, ${Math.round(parseInt(mapPinMain.style.getPropertyValue(`top`), 10) + PIN_MAIN_HEIGHT + PIN_MAIN_POINT_HEIGHT)}`;
+
+  for (let i = 0; i < adverts.length; i++) {
+    fragment.appendChild(renderAdPin(adverts[i]));
+  }
+
+  mapPins.appendChild(fragment);
+
+  mapPinMain.removeEventListener(`mousedown`, mapPinMainMousedownHandler);
+  mapPinMain.removeEventListener(`keydown`, mapPinMainKeydownEnterHandler);
+};
+
+const mapPinMainMousedownHandler = (evt) => {
+  if (evt.button === 0) {
+    activatePage();
+  }
+};
+
+mapPinMain.addEventListener(`mousedown`, mapPinMainMousedownHandler);
+
+const mapPinMainKeydownEnterHandler = (evt) => {
+  if (evt.key === `Enter`) {
+    activatePage();
+  }
+};
+
+mapPinMain.addEventListener(`keydown`, mapPinMainKeydownEnterHandler);
+
+/* const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
 
 const renderAdCard = (advert) => {
   const adCardElement = adCardTemplate.cloneNode(true);
@@ -179,4 +248,46 @@ const renderAdCard = (advert) => {
 
 const adsFilter = adsMap.querySelector(`.map__filters-container`);
 
-adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);
+adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);*/
+
+const roomNumberFilter = adForm.querySelector(`#room_number`);
+
+const capacityFilter = adForm.querySelector(`#capacity`);
+
+if (roomNumberFilter.value < capacityFilter.value) {
+  roomNumberFilter.setCustomValidity(`Количество комнат должно быть больше или равно количеству гостей.`);
+}
+
+roomNumberFilter.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+  const value = parseInt(capacityFilter.value, 10);
+  target.setCustomValidity(``);
+  capacityFilter.setCustomValidity(``);
+
+  if (target.value < value && parseInt(target.value, 10) !== 100) {
+    target.setCustomValidity(`Количество комнат должно быть больше или равно количеству гостей.`);
+  } else if (parseInt(target.value, 10) === 100 && value !== 0) {
+    target.setCustomValidity(`Не для гостей.`);
+  } else if (parseInt(target.value, 10) !== 100 && value === 0) {
+    target.setCustomValidity(`Не для гостей необходимо выбрать 100 комнат.`);
+  }
+
+  adForm.reportValidity();
+});
+
+capacityFilter.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+  const value = parseInt(roomNumberFilter.value, 10);
+  target.setCustomValidity(``);
+  roomNumberFilter.setCustomValidity(``);
+
+  if (target.value > value && parseInt(target.value, 10) !== 0 && value !== 100) {
+    target.setCustomValidity(`Количество мест должно быть меньше или равно количеству комнат.`);
+  } else if (parseInt(target.value, 10) !== 0 && value === 100) {
+    target.setCustomValidity(`Количество мест не для 100 комнат.`);
+  } else if (parseInt(target.value, 10) === 0 && value !== 100) {
+    target.setCustomValidity(`Не для выбранного количества комнат.`);
+  }
+
+  adForm.reportValidity();
+});
