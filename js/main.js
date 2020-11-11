@@ -254,10 +254,6 @@ const roomNumberFilter = adForm.querySelector(`#room_number`);
 
 const capacityFilter = adForm.querySelector(`#capacity`);
 
-if (roomNumberFilter.value < capacityFilter.value) {
-  roomNumberFilter.setCustomValidity(`Количество комнат должно быть больше или равно количеству гостей.`);
-}
-
 roomNumberFilter.addEventListener(`change`, (evt) => {
   const target = evt.target;
   const value = parseInt(capacityFilter.value, 10);
@@ -290,4 +286,47 @@ capacityFilter.addEventListener(`change`, (evt) => {
   }
 
   adForm.reportValidity();
+});
+
+const housingType = adForm.querySelector(`#type`);
+
+const pricePerNight = adForm.querySelector(`#price`);
+
+housingType.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+
+  switch (target.value) {
+    case `bungalow`:
+      pricePerNight.setAttribute(`min`, `0`);
+      pricePerNight.setAttribute(`placeholder`, `0`);
+      break;
+    case `flat`:
+      pricePerNight.setAttribute(`min`, `1000`);
+      pricePerNight.setAttribute(`placeholder`, `1000`);
+      break;
+    case `house`:
+      pricePerNight.setAttribute(`min`, `5000`);
+      pricePerNight.setAttribute(`placeholder`, `5000`);
+      break;
+    case `palace`:
+      pricePerNight.setAttribute(`min`, `10000`);
+      pricePerNight.setAttribute(`placeholder`, `10000`);
+      break;
+  }
+});
+
+const timeIn = adForm.querySelector(`#timein`);
+
+const timeOut = adForm.querySelector(`#timeout`);
+
+timeIn.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+
+  timeOut.value = target.value;
+});
+
+timeOut.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+
+  timeIn.value = target.value;
 });
