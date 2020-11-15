@@ -140,6 +140,8 @@ const adPinTemplate = document.querySelector(`#pin`).content.firstElementChild;
 const renderAdPin = (advert) => {
   const adPinElement = adPinTemplate.cloneNode(true);
 
+  adPinElement.setAttribute(`data-id`, `map-pin-element`);
+
   adPinElement.style = `left: ${advert.location.x - PIN_WIDTH / 2}px; top: ${advert.location.y - PIN_HEIGHT}px;`;
   adPinElement.querySelector(`img`).src = advert.author.avatar;
   adPinElement.querySelector(`img`).alt = advert.offer.title;
@@ -168,6 +170,53 @@ const activatePage = () => {
 
   mapPins.appendChild(fragment);
 
+  const adPinElements = mapPins.querySelectorAll(`button[data-id = map-pin-element]`);
+
+  const addMapPinClickHandler = (adPinElement, advert) => {
+
+    adPinElement.addEventListener(`click`, (evt) => {
+      const target = evt.target;
+      const id = target.closest(`.map__pin`).dataset.id;
+      const popup = adsMap.querySelector(`.popup`);
+
+      if (id !== undefined) {
+        if (adsMap.contains(popup)) {
+          adsMap.removeChild(popup);
+        }
+        if (adPinElement) {
+          const newPopup = renderAdCard(advert);
+
+          adsMap.insertBefore(newPopup, adsFilter);
+
+          const popupClose = newPopup.querySelector(`.popup__close`);
+
+          const onPopupEscPress = (evt) => {
+            if (evt.key === `Escape`) {
+              evt.preventDefault();
+              closePopup();
+            }
+          };
+
+          const closePopup = () => {
+            adsMap.removeChild(newPopup);
+
+            document.removeEventListener(`keydown`, onPopupEscPress);
+          };
+
+          document.addEventListener(`keydown`, onPopupEscPress);
+
+          popupClose.addEventListener(`click`, () => {
+            closePopup();
+          });
+        }
+      }
+    });
+  };
+
+  for (let i = 0; i < adPinElements.length; i++) {
+    addMapPinClickHandler(adPinElements[i], adverts[i]);
+  }
+
   mapPinMain.removeEventListener(`mousedown`, mapPinMainMousedownHandler);
   mapPinMain.removeEventListener(`keydown`, mapPinMainKeydownEnterHandler);
 };
@@ -188,7 +237,7 @@ const mapPinMainKeydownEnterHandler = (evt) => {
 
 mapPinMain.addEventListener(`keydown`, mapPinMainKeydownEnterHandler);
 
-/* const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
+const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
 
 const renderAdCard = (advert) => {
   const adCardElement = adCardTemplate.cloneNode(true);
@@ -247,8 +296,6 @@ const renderAdCard = (advert) => {
 };
 
 const adsFilter = adsMap.querySelector(`.map__filters-container`);
-
-adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);*/
 
 const roomNumberFilter = adForm.querySelector(`#room_number`);
 
