@@ -190,9 +190,9 @@ const activatePage = () => {
 
           const popupClose = newPopup.querySelector(`.popup__close`);
 
-          const onPopupEscPress = (evt) => {
-            if (evt.key === `Escape`) {
-              evt.preventDefault();
+          const onPopupEscPress = (press) => {
+            if (press.key === `Escape`) {
+              press.preventDefault();
               closePopup();
             }
           };
