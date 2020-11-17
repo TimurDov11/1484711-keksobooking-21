@@ -12,6 +12,8 @@ const PIN_HEIGHT = 70;
 
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 
+const PRICE_PER_NIGHT = [`10000`, `1000`, `5000`, `0`];
+
 const CHECKIN = [`12:00`, `13:00`, `14:00`];
 
 const CHECKOUT = [`12:00`, `13:00`, `14:00`];
@@ -339,28 +341,20 @@ const housingType = adForm.querySelector(`#type`);
 
 const pricePerNight = adForm.querySelector(`#price`);
 
-housingType.addEventListener(`change`, (evt) => {
-  const target = evt.target;
+const addHousingTypeChangeHandler = (type, price) => {
+  housingType.addEventListener(`change`, (evt) => {
+    const target = evt.target;
 
-  switch (target.value) {
-    case `bungalow`:
-      pricePerNight.setAttribute(`min`, `0`);
-      pricePerNight.setAttribute(`placeholder`, `0`);
-      break;
-    case `flat`:
-      pricePerNight.setAttribute(`min`, `1000`);
-      pricePerNight.setAttribute(`placeholder`, `1000`);
-      break;
-    case `house`:
-      pricePerNight.setAttribute(`min`, `5000`);
-      pricePerNight.setAttribute(`placeholder`, `5000`);
-      break;
-    case `palace`:
-      pricePerNight.setAttribute(`min`, `10000`);
-      pricePerNight.setAttribute(`placeholder`, `10000`);
-      break;
-  }
-});
+    if (target.value === type) {
+      pricePerNight.setAttribute(`min`, price);
+      pricePerNight.setAttribute(`placeholder`, price);
+    }
+  });
+};
+
+for (let i = 0; i < TYPES.length; i++) {
+  addHousingTypeChangeHandler(TYPES[i], PRICE_PER_NIGHT[i]);
+}
 
 const timeIn = adForm.querySelector(`#timein`);
 
