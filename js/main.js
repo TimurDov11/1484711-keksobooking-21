@@ -12,6 +12,8 @@ const PIN_HEIGHT = 70;
 
 const TYPES = [`palace`, `flat`, `house`, `bungalow`];
 
+const PRICE_PER_NIGHT = [`10000`, `1000`, `5000`, `0`];
+
 const CHECKIN = [`12:00`, `13:00`, `14:00`];
 
 const CHECKOUT = [`12:00`, `13:00`, `14:00`];
@@ -140,6 +142,8 @@ const adPinTemplate = document.querySelector(`#pin`).content.firstElementChild;
 const renderAdPin = (advert) => {
   const adPinElement = adPinTemplate.cloneNode(true);
 
+  adPinElement.setAttribute(`data-id`, `map-pin-element`);
+
   adPinElement.style = `left: ${advert.location.x - PIN_WIDTH / 2}px; top: ${advert.location.y - PIN_HEIGHT}px;`;
   adPinElement.querySelector(`img`).src = advert.author.avatar;
   adPinElement.querySelector(`img`).alt = advert.offer.title;
@@ -168,6 +172,53 @@ const activatePage = () => {
 
   mapPins.appendChild(fragment);
 
+  const adPinElements = mapPins.querySelectorAll(`button[data-id = map-pin-element]`);
+
+  const addMapPinClickHandler = (adPinElement, advert) => {
+
+    adPinElement.addEventListener(`click`, (evt) => {
+      const target = evt.target;
+      const id = target.closest(`.map__pin`).dataset.id;
+      const popup = adsMap.querySelector(`.popup`);
+
+      if (id !== undefined) {
+        if (adsMap.contains(popup)) {
+          adsMap.removeChild(popup);
+        }
+        if (adPinElement) {
+          const newPopup = renderAdCard(advert);
+
+          adsMap.insertBefore(newPopup, adsFilter);
+
+          const popupClose = newPopup.querySelector(`.popup__close`);
+
+          const onPopupEscPress = (press) => {
+            if (press.key === `Escape`) {
+              press.preventDefault();
+              closePopup();
+            }
+          };
+
+          const closePopup = () => {
+            adsMap.removeChild(newPopup);
+
+            document.removeEventListener(`keydown`, onPopupEscPress);
+          };
+
+          document.addEventListener(`keydown`, onPopupEscPress);
+
+          popupClose.addEventListener(`click`, () => {
+            closePopup();
+          });
+        }
+      }
+    });
+  };
+
+  for (let i = 0; i < adPinElements.length; i++) {
+    addMapPinClickHandler(adPinElements[i], adverts[i]);
+  }
+
   mapPinMain.removeEventListener(`mousedown`, mapPinMainMousedownHandler);
   mapPinMain.removeEventListener(`keydown`, mapPinMainKeydownEnterHandler);
 };
@@ -188,7 +239,7 @@ const mapPinMainKeydownEnterHandler = (evt) => {
 
 mapPinMain.addEventListener(`keydown`, mapPinMainKeydownEnterHandler);
 
-/* const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
+const adCardTemplate = document.querySelector(`#card`).content.firstElementChild;
 
 const renderAdCard = (advert) => {
   const adCardElement = adCardTemplate.cloneNode(true);
@@ -248,15 +299,9 @@ const renderAdCard = (advert) => {
 
 const adsFilter = adsMap.querySelector(`.map__filters-container`);
 
-adsMap.insertBefore(renderAdCard(adverts[0]), adsFilter);*/
-
 const roomNumberFilter = adForm.querySelector(`#room_number`);
 
 const capacityFilter = adForm.querySelector(`#capacity`);
-
-if (roomNumberFilter.value < capacityFilter.value) {
-  roomNumberFilter.setCustomValidity(`Количество комнат должно быть больше или равно количеству гостей.`);
-}
 
 roomNumberFilter.addEventListener(`change`, (evt) => {
   const target = evt.target;
@@ -290,4 +335,39 @@ capacityFilter.addEventListener(`change`, (evt) => {
   }
 
   adForm.reportValidity();
+});
+
+const housingType = adForm.querySelector(`#type`);
+
+const pricePerNight = adForm.querySelector(`#price`);
+
+const addHousingTypeChangeHandler = (type, price) => {
+  housingType.addEventListener(`change`, (evt) => {
+    const target = evt.target;
+
+    if (target.value === type) {
+      pricePerNight.setAttribute(`min`, price);
+      pricePerNight.setAttribute(`placeholder`, price);
+    }
+  });
+};
+
+for (let i = 0; i < TYPES.length; i++) {
+  addHousingTypeChangeHandler(TYPES[i], PRICE_PER_NIGHT[i]);
+}
+
+const timeIn = adForm.querySelector(`#timein`);
+
+const timeOut = adForm.querySelector(`#timeout`);
+
+timeIn.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+
+  timeOut.value = target.value;
+});
+
+timeOut.addEventListener(`change`, (evt) => {
+  const target = evt.target;
+
+  timeIn.value = target.value;
 });
